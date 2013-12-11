@@ -3,6 +3,8 @@ linconnect-server
 
 Mirror Android notifications on a Linux desktop.
 
+LinConnect Client: https://github.com/hauckwill/linconnect-client/
+
 Introduction
 ------------
 LinConnect is a project to mirror *all* Android notifications on a Linux desktop using LibNotify.
