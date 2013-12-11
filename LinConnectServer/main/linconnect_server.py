@@ -78,7 +78,7 @@ class Notification(object):
 
         index.exposed = True
 
-    def notif(self, notif_icon):
+    def notif(self, notificon):
         global _notification_header
         global _notification_description
 
@@ -89,19 +89,19 @@ class Notification(object):
             print("Creating icon cache...")
         file_object = open("icon_cache.png", "a")
         while True:
-            data = notif_icon.file.read(8192)
+            data = notificon.file.read(8192)
             if not data:
                 break
             file_object.write(str(data))
         file_object.close()
 
         # Ensure the notification is not a duplicate
-        if (_notification_header != cherrypy.request.headers['NOTIF-HEADER']) \
-        or (_notification_description != cherrypy.request.headers['NOTIF-DESCRIPTION']):
+        if (_notification_header != cherrypy.request.headers['NOTIFHEADER']) \
+        or (_notification_description != cherrypy.request.headers['NOTIFDESCRIPTION']):
 
             # Get notification data from HTTP header
-            _notification_header = cherrypy.request.headers['NOTIF-HEADER'].replace('\x00', '').decode('iso-8859-1', 'replace').encode('utf-8')
-            _notification_description = cherrypy.request.headers['NOTIF-DESCRIPTION'].replace('\x00', '').decode('iso-8859-1', 'replace').encode('utf-8')
+            _notification_header = cherrypy.request.headers['NOTIFHEADER'].replace('\x00', '').decode('iso-8859-1', 'replace').encode('utf-8')
+            _notification_description = cherrypy.request.headers['NOTIFDESCRIPTION'].replace('\x00', '').decode('iso-8859-1', 'replace').encode('utf-8')
 
             # Send the notification
             notif = Notify.Notification.new(_notification_header, _notification_description, icon_path)
