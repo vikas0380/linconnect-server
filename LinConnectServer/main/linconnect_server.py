@@ -144,7 +144,7 @@ def initialize_bonjour():
 def get_local_ip(delim):
     ips = ""
     for ip in subprocess.check_output("/sbin/ip address | grep -i 'inet ' | awk {'print $2'} | sed -e 's/\/[^\/]*$//'", shell=True).split("\n"):
-        if "127" not in ip:
+        if "127" not in ip and ip.__len__() > 0:
             ips += ip + ":" + parser.get('connection', 'port') + delim
     return ips
 
