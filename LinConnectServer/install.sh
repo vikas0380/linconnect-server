@@ -7,8 +7,6 @@ then
     exit 1
 fi
 
-sudo true
-
 read -p "Install dependencies automatically (for Debian-based distros) [Y/N]" -n 1 -r
 echo    # (optional) move to a new line
 if [[ ! $REPLY =~ ^[Yy]$ ]]
