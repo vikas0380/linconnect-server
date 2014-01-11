@@ -34,7 +34,9 @@ import cherrypy
 import subprocess
 from gi.repository import Notify
 import pybonjour
+import shutil
 
+app_name = 'linconnect-server'
 version = "3"
 
 # Global Variables
@@ -42,8 +44,27 @@ _notification_header = ""
 _notification_description = ""
 
 # Configuration
-current_dir = os.path.abspath(os.path.dirname(__file__))
-conf_file = os.path.join(current_dir, 'conf.ini')
+script_dir = os.path.abspath(os.path.dirname(__file__))
+
+conf_dir = os.path.expanduser(os.path.join('~/.config', app_name))
+if not os.path.isdir(conf_dir):
+    os.makedirs(conf_dir)
+conf_file = os.path.join(conf_dir, 'conf.ini')
+
+cache_dir = os.path.expanduser(os.path.join('~/.cache', app_name))
+if not os.path.isdir(cache_dir):
+    os.makedirs(cache_dir)
+icon_path = os.path.join(cache_dir, 'icon_cache.png')
+
+old_conf_file = os.path.join(script_dir, 'conf.ini')
+if os.path.isfile(old_conf_file):
+    if os.path.isfile(conf_file):
+        print("Both old and new config files exist: %s and %s, ignoring old one" % (old_conf_file, conf_file))
+    else:
+        print("Old config file %s found, moving to a new location: %s" % (old_conf_file, conf_file))
+        shutil.move(old_conf_file, conf_file)
+del old_conf_file
+
 try:
     with open(conf_file):
         print("Loading conf.ini")
@@ -65,12 +86,9 @@ del conf_file
 # Must append port because Java Bonjour library can't determine it
 _service_name = platform.node()
 
-icon_path = os.path.join(current_dir, "icon_cache.png")
-
-
 class Notification(object):
     if parser.getboolean('other', 'enable_instruction_webpage') == 1:
-        with open(os.path.join(current_dir, 'index.html'), 'rb') as f:
+        with open(os.path.join(script_dir, 'index.html'), 'rb') as f:
             _index_source = f.read()
 
         def index(self):
@@ -84,10 +102,10 @@ class Notification(object):
 
         # Get icon
         try:
-            os.remove("icon_cache.png")
+            os.remove(icon_path)
         except:
             print("Creating icon cache...")
-        file_object = open("icon_cache.png", "a")
+        file_object = open(icon_path, "a")
         while True:
             data = notificon.file.read(8192)
             if not data:
