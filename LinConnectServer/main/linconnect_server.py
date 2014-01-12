@@ -46,15 +46,14 @@ _notification_description = ""
 # Configuration
 script_dir = os.path.abspath(os.path.dirname(__file__))
 
-conf_dir = os.path.expanduser(os.path.join('~/.config', app_name))
-if not os.path.isdir(conf_dir):
-    os.makedirs(conf_dir)
-conf_file = os.path.join(conf_dir, 'conf.ini')
+def user_specific_location(type, file):
+    dir = os.path.expanduser(os.path.join('~/.' + type, app_name))
+    if not os.path.isdir(dir):
+        os.makedirs(dir)
+    return os.path.join(dir, file)
 
-cache_dir = os.path.expanduser(os.path.join('~/.cache', app_name))
-if not os.path.isdir(cache_dir):
-    os.makedirs(cache_dir)
-icon_path = os.path.join(cache_dir, 'icon_cache.png')
+conf_file = user_specific_location('config', 'conf.ini')
+icon_path = user_specific_location('cache', 'icon_cache.png')
 
 old_conf_file = os.path.join(script_dir, 'conf.ini')
 if os.path.isfile(old_conf_file):
