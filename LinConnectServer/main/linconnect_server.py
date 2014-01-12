@@ -91,7 +91,7 @@ class Notification(object):
             _index_source = f.read()
 
         def index(self):
-            return self._index_source % (version, get_local_ip("<br>"))
+            return self._index_source % (version, "<br/>".join(get_local_ip()))
 
         index.exposed = True
 
@@ -158,11 +158,11 @@ def initialize_bonjour():
         sdRef.close()
 
 
-def get_local_ip(delim):
-    ips = ""
+def get_local_ip():
+    ips = []
     for ip in subprocess.check_output("/sbin/ip address | grep -i 'inet ' | awk {'print $2'} | sed -e 's/\/[^\/]*$//'", shell=True).split("\n"):
-        if "127" not in ip and ip.__len__() > 0:
-            ips += ip + ":" + parser.get('connection', 'port') + delim
+        if ip.__len__() > 0 and not ip.startswith("127."):
+            ips.append(ip + ":" + parser.get('connection', 'port'))
     return ips
 
 # Initialization
