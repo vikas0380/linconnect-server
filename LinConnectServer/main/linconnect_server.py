@@ -38,7 +38,7 @@ import shutil
 import base64
 
 app_name = 'linconnect-server'
-version = "3"
+version = "220"
 
 # Global Variables
 _notification_header = ""
