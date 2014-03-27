@@ -35,6 +35,7 @@ import subprocess
 from gi.repository import Notify
 import pybonjour
 import shutil
+import base64
 
 app_name = 'linconnect-server'
 version = "3"
@@ -117,8 +118,13 @@ class Notification(object):
         or (_notification_description != cherrypy.request.headers['NOTIFDESCRIPTION']):
 
             # Get notification data from HTTP header
-            _notification_header = cherrypy.request.headers['NOTIFHEADER'].replace('\x00', '').decode('iso-8859-1', 'replace').encode('utf-8')
-            _notification_description = cherrypy.request.headers['NOTIFDESCRIPTION'].replace('\x00', '').decode('iso-8859-1', 'replace').encode('utf-8')
+            try:
+                notification_header = base64.urlsafe_b64decode(cherrypy.request.headers['NOTIFHEADER'])
+                notification_description = base64.urlsafe_b64decode(cherrypy.request.headers['NOTIFDESCRIPTION'])
+            except:
+                # Maintain compatibility with old application
+                _notification_header = cherrypy.request.headers['NOTIFHEADER'].replace('\x00', '').decode('iso-8859-1', 'replace').encode('utf-8')
+                _notification_description = cherrypy.request.headers['NOTIFDESCRIPTION'].replace('\x00', '').decode('iso-8859-1', 'replace').encode('utf-8')
 
             # Send the notification
             notif = Notify.Notification.new(_notification_header, _notification_description, icon_path)
