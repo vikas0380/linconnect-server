@@ -36,6 +36,8 @@ $ wget --quiet https://raw.github.com/hauckwill/linconnect-server/master/LinConn
 chmod +x install.sh; \
 ./install.sh
 ```
+
+To remove LinConnect, delete the ~/.linconnect directory.
         
 Client Download
 ---------------
