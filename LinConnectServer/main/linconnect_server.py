@@ -38,7 +38,7 @@ import shutil
 import base64
 
 app_name = 'linconnect-server'
-version = "220"
+version = "2.20"
 
 # Global Variables
 _notification_header = ""
@@ -182,7 +182,7 @@ if parser.getboolean('connection', 'enable_bonjour') == 1:
 
 config_instructions = "Configuration instructions at http://localhost:" + parser.get('connection', 'port')
 print(config_instructions)
-notif = Notify.Notification.new("Notification server started", config_instructions, "info")
+notif = Notify.Notification.new("Notification server started (version " + version + ")", config_instructions, "info")
 notif.show()
 
 cherrypy.server.socket_host = '0.0.0.0'
