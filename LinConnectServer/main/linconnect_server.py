@@ -119,8 +119,8 @@ class Notification(object):
 
             # Get notification data from HTTP header
             try:
-                notification_header = base64.urlsafe_b64decode(cherrypy.request.headers['NOTIFHEADER'])
-                notification_description = base64.urlsafe_b64decode(cherrypy.request.headers['NOTIFDESCRIPTION'])
+                _notification_header = base64.urlsafe_b64decode(cherrypy.request.headers['NOTIFHEADER'])
+                _notification_description = base64.urlsafe_b64decode(cherrypy.request.headers['NOTIFDESCRIPTION'])
             except:
                 # Maintain compatibility with old application
                 _notification_header = cherrypy.request.headers['NOTIFHEADER'].replace('\x00', '').decode('iso-8859-1', 'replace').encode('utf-8')
