@@ -11,13 +11,23 @@ read -p "Install dependencies automatically (for Debian-based distros) [Y/N]" -n
 echo    # (optional) move to a new line
 if [[ ! $REPLY =~ ^[Yy]$ ]]
 then
-    echo "Please manually install the following:"
+    read -p "Install dependencies automatically (for Fedora distros) [Y/N]" -n 1 -r
+    if [[ ! $REPLY =~ ^[Yy]$ ]]
+    then
+	echo "Please manually install the following:"
 	echo "* python2"
 	echo "* python-pip"
 	echo "* python-gobject"
 	echo "* libavahi-compat-libdnssd1"
 	echo "* cherrypy (python package)"
 	echo "* pybonjour (python package)"
+	
+    else
+	echo "Installing dependencies..."
+	sudo yum install -y python2 python-pip pygobject2 git avahi-compat-libdns_sd
+	echo "Installing Python dependencies..."
+	sudo pip install cherrypy pybonjour
+    fi
 else
 	echo "Installing dependencies..."
 	sudo apt-get install -y python-pip python-gobject git libavahi-compat-libdnssd1 gir1.2-notify-0.7
@@ -50,5 +60,3 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
     ~/.linconnect/LinConnectServer/update.sh
 fi
-
-
