@@ -29,10 +29,12 @@ import sys
 import select
 import threading
 import platform
+import re
 
 import cherrypy
 import subprocess
 from gi.repository import Notify
+from gi.repository import GLib
 import pybonjour
 import shutil
 import base64
@@ -128,6 +130,10 @@ class Notification(object):
 
             # Send the notification
             notif = Notify.Notification.new(_notification_header, _notification_description, icon_path)
+            # Add 'value' hint to display nice progress bar if we see percents in the notification
+            percent_match = re.search(r'(1?\d{2})%', _notification_header + _notification_description)
+            if percent_match:
+                notif.set_hint('value', GLib.Variant('i', int(percent_match.group(1))))
             if parser.has_option('other', 'notify_timeout'):
                 notif.set_timeout(parser.getint('other', 'notify_timeout'))
             try:
