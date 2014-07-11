@@ -30,6 +30,8 @@ import select
 import threading
 import platform
 import re
+import glob
+import hashlib
 
 import cherrypy
 import subprocess
@@ -56,7 +58,11 @@ def user_specific_location(type, file):
     return os.path.join(dir, file)
 
 conf_file = user_specific_location('config', 'conf.ini')
-icon_path = user_specific_location('cache', 'icon_cache.png')
+icon_path_format = user_specific_location('cache', 'icon_cache_%s.png')
+
+# Clear the icon cache
+for icon_cache_file in glob.glob(icon_path_format % '*'):
+    os.unlink(icon_cache_file)
 
 old_conf_file = os.path.join(script_dir, 'conf.ini')
 if os.path.isfile(old_conf_file):
@@ -102,19 +108,6 @@ class Notification(object):
         global _notification_header
         global _notification_description
 
-        # Get icon
-        try:
-            os.remove(icon_path)
-        except:
-            print("Creating icon cache...")
-        file_object = open(icon_path, "a")
-        while True:
-            data = notificon.file.read(8192)
-            if not data:
-                break
-            file_object.write(str(data))
-        file_object.close()
-
         # Get notification data from HTTP header
         try:
             new_notification_header = base64.urlsafe_b64decode(cherrypy.request.headers['NOTIFHEADER'])
@@ -129,6 +122,15 @@ class Notification(object):
         or (_notification_description != new_notification_description):
             _notification_header = new_notification_header
             _notification_description = new_notification_description
+
+            # Icon should be small enough to fit into modern PCs RAM.
+            # Alternatively, can do this in chunks, twice: first to count MD5, second to copy the file.
+            icon_data = notificon.file.read()
+            icon_path = icon_path_format % hashlib.md5(icon_data).hexdigest()
+
+            if not os.path.isfile(icon_path):
+                with open(icon_path, 'w') as icon_file:
+                    icon_file.write(icon_data)
 
             # Send the notification
             notif = Notify.Notification.new(_notification_header, _notification_description, icon_path)
